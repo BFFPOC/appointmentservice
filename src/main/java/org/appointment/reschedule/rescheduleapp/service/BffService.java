@@ -1,14 +1,14 @@
 package org.appointment.reschedule.rescheduleapp.service;
 
-import java.util.Optional;
-
 import org.appointment.reschedule.rescheduleapp.dto.Appointment;
-import org.appointment.reschedule.rescheduleapp.exception.ResourceNotFoundException;
+import org.appointment.reschedule.rescheduleapp.dto.Member;
 
 public interface BffService {
 
-	Optional<Appointment> findById(int id) throws ResourceNotFoundException;
+	Appointment findById(int id) ;
 
 	Appointment save(Appointment appointment);
+	
+	Member findByMemId(int memberId);
 	
 }

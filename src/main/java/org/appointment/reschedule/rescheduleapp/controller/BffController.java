@@ -1,74 +1,64 @@
 package org.appointment.reschedule.rescheduleapp.controller;
 
-import java.util.Optional;
-
 import org.appointment.reschedule.rescheduleapp.dto.Appointment;
+import org.appointment.reschedule.rescheduleapp.dto.Member;
 import org.appointment.reschedule.rescheduleapp.exception.ResourceNotFoundException;
 import org.appointment.reschedule.rescheduleapp.service.BffService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class BffController {
-	
-	
+
 	private static final Logger log = LoggerFactory.getLogger(BffController.class);
 
-	
 	@Autowired
 	BffService bffService;
-	
-	@PutMapping("/reschedule/{id}")
-	public ResponseEntity<Optional<Appointment>> updateAppointmentSlot(@PathVariable(value = "id") int appointmentId) throws ResourceNotFoundException{
-		log.info("updateAppointmentSlot started{}", appointmentId);
-	
-		Optional<Appointment> appointment;
+
+	@RequestMapping(value = "/reschedule", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.PUT)
+	public Appointment updateAppointmentSlot(@RequestBody Appointment reqPayLoad,@RequestHeader("X-correlationid") String correaltionId) {
+		log.info("updateAppointmentSlot started{}", reqPayLoad.getId());
+		System.out.println("in rest service***************:"+reqPayLoad);
 		
-		try {
-			appointment	 = bffService.findById(appointmentId);
-		}catch(ResourceNotFoundException e) {
-			throw new ResourceNotFoundException(HttpStatus.NOT_FOUND, "Foo Not Found", e);
-		}
-		
-		//TODO : update the timeslot in database.
-		// As write operation is failing still needs to work on this.
-	    // final Appointment updatedEmployee = bffService.save(user);
-	     return new ResponseEntity<>(appointment, HttpStatus.OK);
-	}
-	
-	 @GetMapping("/schedule/{id}")
-	public ResponseEntity<Optional<Appointment>> scheduleApp(@PathVariable(value = "id") int appointmentId) {
-		// TODO: Implementation by corresponding team
-		Optional<Appointment> appointment = null;
-		try {
-			appointment = bffService.findById(appointmentId);
-		} catch (ResourceNotFoundException e) {
-			throw new ResourceNotFoundException("Appointment Id not found");
-		}
-		
-		return ResponseEntity.ok(appointment);
-	}
-	 
-	    @PostMapping("/cancel/{id}")
-		public ResponseEntity<Optional<Appointment>> scheduleAppt(@PathVariable(value = "id") int appointmentId) {
-			// TODO: Implementation by corresponding team
-			Optional<Appointment> appointment = null;
-			try {
-				appointment = bffService.findById(appointmentId);
-			} catch (ResourceNotFoundException e) {
-				throw new ResourceNotFoundException("Appointment Id not found");
+		Appointment appt = bffService.findById(reqPayLoad.getId());
+		//:12345
+		//Authorization:pogpoerjgpoom3or34p3vjo4jp
+		if(appt != null) {
+			// Validate token of the request
+			Member members = bffService.findByMemId(appt.getMemberId());
+			
+			if(members.getToken().equals(reqPayLoad.getToken())) {
+				appt.setAppointmentSlot(reqPayLoad.getAppointmentSlot());
+			}else {
+				throw new ResourceNotFoundException("token is not valid", appt.getMemberId());
 			}
 			
-			return ResponseEntity.ok(appointment);
+			//
+			appt.setCorrealtionId(correaltionId);
 		}
+		// Update the timeslot for appointment.
+		bffService.save(appt);
+		return appt;
+	}
 
+	@RequestMapping(value = "/schedule" , produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
+	public Appointment scheduleApp(@RequestBody Appointment reqPayLoad) {
+		// TODO: Implementation by corresponding team
+		return bffService.findById(reqPayLoad.getId());
+	}
+
+	@RequestMapping(value = "/cancel", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
+	public Appointment scheduleAppt(@RequestBody Appointment reqPayLoad) {
+		// TODO: Implementation by corresponding team
+		return bffService.findById(reqPayLoad.getId());
+	}
 
 }
