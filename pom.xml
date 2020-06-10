@@ -12,7 +12,7 @@
   <groupId>org.bff.appointment</groupId>  
   <artifactId>appointmetnserviceapp</artifactId>  
   <version>0.0.1-SNAPSHOT</version>  
-  <name>appointmetnserviceapp</name>  
+  <name>appointmentserviceapp</name>  
   <description>Demo project for Spring Boot</description>  
   <properties> 
     <java.version>1.8</java.version> 
@@ -64,8 +64,8 @@
         <version>1.9.1</version>  
         <configuration> 
           <schemaVersion>V2</schemaVersion>  
-          <resourceGroup>appointmetnserviceapp-1591774967422-rg</resourceGroup>  
-          <appName>appointmetnserviceapp-1591774967422</appName>  
+          <resourceGroup>appointmentserviceapp-1591774967422-rg</resourceGroup>  
+          <appName>appointmentserviceapp-1591774967422</appName>  
           <pricingTier>P1v2</pricingTier>  
           <region>westeurope</region>  
           <runtime> 
