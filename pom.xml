@@ -10,7 +10,7 @@
     <!-- lookup parent from repository --> 
   </parent>  
   <groupId>org.bff.appointment</groupId>  
-  <artifactId>appointmetnserviceapp</artifactId>  
+  <artifactId>appointmentserviceapp</artifactId>  
   <version>0.0.1-SNAPSHOT</version>  
   <name>appointmentserviceapp</name>  
   <description>Demo project for Spring Boot</description>  
