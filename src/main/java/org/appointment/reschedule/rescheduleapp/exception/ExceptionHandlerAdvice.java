@@ -22,6 +22,7 @@ public class ExceptionHandlerAdvice extends ResponseEntityExceptionHandler {
 		Map<String, Object> body = new LinkedHashMap<>();
 		body.put("timestamp", LocalDateTime.now());
 		body.put("message", e.getMessage());
+		body.put("status", HttpStatus.NOT_FOUND);
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
 
 	}
@@ -34,6 +35,7 @@ public class ExceptionHandlerAdvice extends ResponseEntityExceptionHandler {
 		Map<String, Object> body = new LinkedHashMap<>();
 		body.put("timestamp", LocalDateTime.now());
 		body.put("message", "SQL Server Exception");
+		body.put("status", HttpStatus.BAD_REQUEST);
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
 
 	}
