@@ -74,7 +74,6 @@ public class BffController {
 	public Appointment cancelAppointmentSlot(@RequestBody Appointment reqPayLoad) {
 		log.info("cancelAppointmentSlot started{}", reqPayLoad.getId());
 		System.out.println("cancel in rest service***************:"+reqPayLoad);
-		
 		Appointment appt = bffService.findById(reqPayLoad.getId());
 		if(appt != null) {
 			// Validate token of the request
@@ -83,6 +82,8 @@ public class BffController {
 			if(members.getToken().equals(reqPayLoad.getToken())) {
 				 if(!appt.isCancelled()) {
 				appt.setCancelled(true);
+				 }else {
+					 throw new ResourceNotFoundException("Appointment is already cancelled", reqPayLoad.getMemberId());
 				 }
 			}else {
 				throw new ResourceNotFoundException("token is not valid", appt.getMemberId());
