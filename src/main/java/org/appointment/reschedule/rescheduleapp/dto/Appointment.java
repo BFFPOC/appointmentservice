@@ -24,6 +24,10 @@ public class Appointment {
 	private int memberId;
 	@Column(name = "FACILITY_ID")
 	private int facilityId;
+	@Column(name = "CANCELLED")
+	private boolean cancelled;
+
+	
 
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	@Transient
@@ -67,6 +71,13 @@ public class Appointment {
 	public void setFacilityId(int facilityId) {
 		this.facilityId = facilityId;
 	}
+	public boolean isCancelled() {
+		return cancelled;
+	}
+
+	public void setCancelled(boolean cancelled) {
+		this.cancelled = cancelled;
+	}
 
 	public String getToken() {
 		return token;
@@ -84,10 +95,10 @@ public class Appointment {
 	public void setCorrealtionId(String correaltionId) {
 		this.correaltionId = correaltionId;
 	}
-
+	
 	@Override
 	public String toString() {
-		return "Appintment{" + ", memberid='" + memberId + '\'' + ", appintmentslot=" + appointmentSlot + '}';
+		return "Appointment{" + ", memberid='" + memberId + '\'' + ", appintmentslot=" + appointmentSlot + '}';
 	}
 
 }

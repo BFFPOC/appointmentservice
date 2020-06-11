@@ -71,9 +71,26 @@ public class BffController {
 	}
 
 	@RequestMapping(value = "/cancel", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.PUT)
-	public Appointment scheduleAppt(@RequestBody Appointment reqPayLoad) {
-		// TODO: Implementation by corresponding team
-		return bffService.findById(reqPayLoad.getId());
+	public Appointment cancelAppointmentSlot(@RequestBody Appointment reqPayLoad) {
+		log.info("cancelAppointmentSlot started{}", reqPayLoad.getId());
+		System.out.println("cancel in rest service***************:"+reqPayLoad);
+		
+		Appointment appt = bffService.findById(reqPayLoad.getId());
+		if(appt != null) {
+			// Validate token of the request
+			Member members = bffService.findByMemId(reqPayLoad.getMemberId());
+			
+			if(members.getToken().equals(reqPayLoad.getToken())) {
+				 if(!appt.isCancelled()) {
+				appt.setCancelled(true);
+				 }
+			}else {
+				throw new ResourceNotFoundException("token is not valid", appt.getMemberId());
+			}
+		}
+		// Update the cancelled flag for appointment.
+		bffService.save(appt);
+		return appt;
 	}
 
 }
