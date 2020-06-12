@@ -73,15 +73,19 @@ public class BffController {
 	public Appointment scheduleApp(@RequestBody Appointment reqPayLoad) {
 		
 		// Verify Member Id and Facility Id from the request
+		Member members= null;
 		if(reqPayLoad.getMemberId() != 0) {
-			bffService.findByMemId(reqPayLoad.getMemberId());
+			members= bffService.findByMemId(reqPayLoad.getMemberId());
 		}
 		if(reqPayLoad.getFacilityId() != 0) {
 			bffService.findByFacilityId(reqPayLoad.getFacilityId());
 		}
 		
+		System.out.println("token "+reqPayLoad.getToken());
 		//Appointment appointment  = bffService.findByFacilityIdAndMemberId(reqPayLoad.getFacilityId(), reqPayLoad.getMemberId());
-		
+		if (!members.getToken().equals(reqPayLoad.getToken())) {
+            throw new ResourceNotFoundException("token is not valid", members.getId());
+        }
 		Appointment app = new Appointment();
 		app.setFacilityId(reqPayLoad.getFacilityId());
 		app.setMemberId(reqPayLoad.getMemberId());
