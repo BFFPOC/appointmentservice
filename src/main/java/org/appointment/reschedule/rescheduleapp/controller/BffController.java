@@ -28,24 +28,21 @@ public class BffController {
 	@RequestMapping(value = "/reschedule", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.PUT)
 	public Appointment updateAppointmentSlot(@RequestBody Appointment reqPayLoad,
 			@RequestHeader("X-correlationid") String correaltionId) {
-		log.info("updateAppointmentSlot started{}", reqPayLoad.getId());	
+		log.info("updateAppointmentSlot started{}", reqPayLoad.getId());
 		Appointment appt = bffService.findById(reqPayLoad.getId());
-		
+
 		if (appt != null) {
 			// Validate token of the request
 			Member members = bffService.findByMemId(appt.getMemberId());
 
 			if (members.getToken().equals(reqPayLoad.getToken())) {
-				appt.setAppointmentSlot(reqPayLoad.getAppointmentSlot());
-				if (!appt.isCancelled()) {
-					appt.setCancelled(true);
-				} else {
+				if (appt.isCancelled()) {
 					throw new ResourceNotFoundException("Appointment is already cancelled", reqPayLoad.getMemberId());
 				}
+				appt.setAppointmentSlot(reqPayLoad.getAppointmentSlot());
 			} else {
 				throw new ResourceNotFoundException("token is not valid", appt.getMemberId());
 			}
-			
 
 			// set correlation id from the request payload
 			appt.setCorrealtionId(correaltionId);
@@ -69,28 +66,27 @@ public class BffController {
 
 	@RequestMapping(value = "/schedule", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
 	public Appointment scheduleApp(@RequestBody Appointment reqPayLoad) {
-		
+
 		// Verify Member Id and Facility Id from the request
-		Member members= null;
-		if(reqPayLoad.getMemberId() != 0) {
-			members= bffService.findByMemId(reqPayLoad.getMemberId());
+		Member members = null;
+		if (reqPayLoad.getMemberId() != 0) {
+			members = bffService.findByMemId(reqPayLoad.getMemberId());
 		}
-		if(reqPayLoad.getFacilityId() != 0) {
+		if (reqPayLoad.getFacilityId() != 0) {
 			bffService.findByFacilityId(reqPayLoad.getFacilityId());
-		}	
+		}
 		if (!members.getToken().equals(reqPayLoad.getToken())) {
-            throw new ResourceNotFoundException("token is not valid", members.getId());
-        }
+			throw new ResourceNotFoundException("token is not valid", members.getId());
+		}
 		Appointment app = new Appointment();
 		app.setFacilityId(reqPayLoad.getFacilityId());
 		app.setMemberId(reqPayLoad.getMemberId());
 		app.setAppointmentSlot(reqPayLoad.getAppointmentSlot());
 		try {
 			bffService.save(app);
-		}catch(DuplicateKeyException DuplicateKeyException){
+		} catch (DuplicateKeyException DuplicateKeyException) {
 			throw new ResourceNotFoundException("DuplicateKey Found in Appointment", app.getId());
 		}
-		
 
 		return bffService.findById(app.getId());
 	}
@@ -98,7 +94,7 @@ public class BffController {
 	@RequestMapping(value = "/cancel", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.PUT)
 	public Appointment cancelAppointmentSlot(@RequestBody Appointment reqPayLoad,
 			@RequestHeader("X-correlationid") String correaltionId) {
-		log.info("cancelAppointmentSlot started{}", reqPayLoad.getId());		
+		log.info("cancelAppointmentSlot started{}", reqPayLoad.getId());
 		Appointment appt = bffService.findById(reqPayLoad.getId());
 		if (appt != null) {
 			// Validate token of the request
