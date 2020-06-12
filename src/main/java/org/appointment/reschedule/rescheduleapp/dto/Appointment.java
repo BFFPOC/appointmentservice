@@ -1,12 +1,18 @@
 package org.appointment.reschedule.rescheduleapp.dto;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.hibernate.annotations.Type;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -15,7 +21,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 public class Appointment {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequence-generator")
+	@SequenceGenerator(name = "sequence-generator", sequenceName = "appt_sequence")
 	@Column(name = "APPT_ID")
 	private Integer id;
 	@Column(name = "APPT_SLOT")
@@ -25,14 +32,17 @@ public class Appointment {
 	@Column(name = "FACILITY_ID")
 	private int facilityId;
 	@Column(name = "CANCELLED")
+	@Type(type = "numeric_boolean")
 	private boolean cancelled;
-
-	
+	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "appointment")
+	private Member member;
+	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "appointment")
+	private Facility facility;
 
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	@Transient
 	private String token;
-	
+
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	@Transient
 	private String correaltionId;
@@ -71,6 +81,7 @@ public class Appointment {
 	public void setFacilityId(int facilityId) {
 		this.facilityId = facilityId;
 	}
+
 	public boolean isCancelled() {
 		return cancelled;
 	}
@@ -87,7 +98,6 @@ public class Appointment {
 		this.token = token;
 	}
 
-	
 	public String getCorrealtionId() {
 		return correaltionId;
 	}
@@ -95,7 +105,7 @@ public class Appointment {
 	public void setCorrealtionId(String correaltionId) {
 		this.correaltionId = correaltionId;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "Appointment{" + ", memberid='" + memberId + '\'' + ", appintmentslot=" + appointmentSlot + '}';
