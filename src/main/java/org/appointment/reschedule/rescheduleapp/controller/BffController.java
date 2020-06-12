@@ -28,9 +28,7 @@ public class BffController {
 	@RequestMapping(value = "/reschedule", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.PUT)
 	public Appointment updateAppointmentSlot(@RequestBody Appointment reqPayLoad,
 			@RequestHeader("X-correlationid") String correaltionId) {
-		log.info("updateAppointmentSlot started{}", reqPayLoad.getId());
-		System.out.println("in rest service***************:" + reqPayLoad);
-
+		log.info("updateAppointmentSlot started{}", reqPayLoad.getId());	
 		Appointment appt = bffService.findById(reqPayLoad.getId());
 		
 		if (appt != null) {
@@ -79,10 +77,7 @@ public class BffController {
 		}
 		if(reqPayLoad.getFacilityId() != 0) {
 			bffService.findByFacilityId(reqPayLoad.getFacilityId());
-		}
-		
-		System.out.println("token "+reqPayLoad.getToken());
-		//Appointment appointment  = bffService.findByFacilityIdAndMemberId(reqPayLoad.getFacilityId(), reqPayLoad.getMemberId());
+		}	
 		if (!members.getToken().equals(reqPayLoad.getToken())) {
             throw new ResourceNotFoundException("token is not valid", members.getId());
         }
@@ -103,8 +98,7 @@ public class BffController {
 	@RequestMapping(value = "/cancel", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.PUT)
 	public Appointment cancelAppointmentSlot(@RequestBody Appointment reqPayLoad,
 			@RequestHeader("X-correlationid") String correaltionId) {
-		log.info("cancelAppointmentSlot started{}", reqPayLoad.getId());
-		System.out.println("cancel in rest service***************:" + reqPayLoad);
+		log.info("cancelAppointmentSlot started{}", reqPayLoad.getId());		
 		Appointment appt = bffService.findById(reqPayLoad.getId());
 		if (appt != null) {
 			// Validate token of the request
