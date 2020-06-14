@@ -28,6 +28,22 @@ public class Member {
 	@JoinColumn(name = "MEM_ID", nullable = false)
 	private Appointment appointment;
 
+	public int getMemberId() {
+		return memberId;
+	}
+
+	public void setMemberId(int memberId) {
+		this.memberId = memberId;
+	}
+
+	public Appointment getAppointment() {
+		return appointment;
+	}
+
+	public void setAppointment(Appointment appointment) {
+		this.appointment = appointment;
+	}
+
 	public Member() {
 
 	}

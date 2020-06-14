@@ -24,11 +24,27 @@ public class Appointment {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequence-generator")
 	@SequenceGenerator(name = "sequence-generator", sequenceName = "appt_sequence")
 	@Column(name = "APPT_ID")
-	private Integer id;
+	private int id;
 	@Column(name = "APPT_SLOT")
 	private String appointmentSlot;
 	@Column(name = "MEMBER_ID")
 	private int memberId;
+	public Member getMember() {
+		return member;
+	}
+
+	public void setMember(Member member) {
+		this.member = member;
+	}
+
+	public Facility getFacility() {
+		return facility;
+	}
+
+	public void setFacility(Facility facility) {
+		this.facility = facility;
+	}
+
 	@Column(name = "FACILITY_ID")
 	private int facilityId;
 	@Column(name = "CANCELLED")
@@ -50,11 +66,11 @@ public class Appointment {
 	public Appointment() {
 	}
 
-	public Integer getId() {
+	public int getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 

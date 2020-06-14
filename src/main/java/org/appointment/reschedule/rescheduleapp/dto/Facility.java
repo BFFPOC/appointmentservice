@@ -26,6 +26,14 @@ public class Facility {
 	@JoinColumn(name = "FAC_ID", nullable = false)
 	private Appointment appointment;
 
+	public Appointment getAppointment() {
+		return appointment;
+	}
+
+	public void setAppointment(Appointment appointment) {
+		this.appointment = appointment;
+	}
+
 	public Facility() {
 
 	}

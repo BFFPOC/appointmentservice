@@ -1,5 +1,7 @@
 package org.appointment.reschedule.rescheduleapp.controller;
 
+import java.util.List;
+
 import org.appointment.reschedule.rescheduleapp.dto.Appointment;
 import org.appointment.reschedule.rescheduleapp.dto.Member;
 import org.appointment.reschedule.rescheduleapp.exception.ResourceNotFoundException;
@@ -66,7 +68,14 @@ public class BffController {
 
 	@RequestMapping(value = "/schedule", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
 	public Appointment scheduleApp(@RequestBody Appointment reqPayLoad) {
-
+		List<String> findAppointmentSlot = bffService.findAppointmentSlot();
+		for (String slot : findAppointmentSlot) {
+			if(slot.equals(reqPayLoad.getAppointmentSlot())){
+				throw new ResourceNotFoundException(" Appointment slot is not available or same", reqPayLoad.getMemberId());				
+			}			
+			
+		} 
+		
 		// Verify Member Id and Facility Id from the request
 		Member members = null;
 		if (reqPayLoad.getMemberId() != 0) {
@@ -75,6 +84,7 @@ public class BffController {
 		if (reqPayLoad.getFacilityId() != 0) {
 			bffService.findByFacilityId(reqPayLoad.getFacilityId());
 		}
+		
 		if (!members.getToken().equals(reqPayLoad.getToken())) {
 			throw new ResourceNotFoundException("token is not valid", members.getId());
 		}

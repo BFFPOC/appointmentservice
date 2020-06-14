@@ -1,5 +1,9 @@
 package org.appointment.reschedule.rescheduleapp.service;
 
+import java.util.List;
+
+import javax.transaction.Transactional;
+
 import org.appointment.reschedule.rescheduleapp.dto.Appointment;
 import org.appointment.reschedule.rescheduleapp.dto.Facility;
 import org.appointment.reschedule.rescheduleapp.dto.Member;
@@ -32,6 +36,7 @@ public class BffServiceImpl implements BffService{
 	}
 
 	@Override
+	@Transactional
 	public Appointment save(Appointment appointment) {
 		return appointmentRepository.save(appointment);
 	}
@@ -47,8 +52,15 @@ public class BffServiceImpl implements BffService{
 	}
 
 	@Override
-	public Appointment findByFacilityIdAndMemberId(int faciltityId, int memberId) {
+	public List<Appointment> findByFacilityIdAndMemberId(int faciltityId, int memberId) {
+		//appointmentRepository.findByFacilityIdAndMemberId(faciltityId, memberId)
 		return appointmentRepository.findByFacilityIdAndMemberId(faciltityId, memberId);
+	}
+
+	@Override
+	public List<String> findAppointmentSlot() {
+		// TODO Auto-generated method stub
+		return appointmentRepository.findAppointmentSlot();
 	}
 
 }
