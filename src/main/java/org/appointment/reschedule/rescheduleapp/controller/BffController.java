@@ -60,6 +60,10 @@ public class BffController {
 		List<Appointment> appointment = null;
 		try {
 			appointment = bffService.findByMemberIdAndCancelledTrue(memberId);
+			if(appointment==null || appointment.isEmpty()) {
+				log.info("getAppointments list size", appointment.size());
+				throw new ResourceNotFoundException("Appointments are not available for the given member Id", memberId);
+			}
 		} catch (ResourceNotFoundException e) {
 			throw new ResourceNotFoundException("Member Id not found", memberId);
 		}
