@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -52,18 +51,20 @@ public class BffController {
 		// Update the timeslot for appointment.
 		bffService.save(appt);
 		return appt;
+		
 	}
 
-	@RequestMapping(value = "/schedule/{id}", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
-	public ResponseEntity<Appointment> getAppointmentSlot(@PathVariable(value = "id") int appointmentId) {
-		Appointment appointment = null;
+	@RequestMapping(value = "/getAppointments/{id}", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
+	public List<Appointment> getAppointments(@PathVariable(value = "id") int memberId) {
+		log.info("getAppointments started{}", memberId);
+		List<Appointment> appointment = null;
 		try {
-			appointment = bffService.findById(appointmentId);
+			appointment = bffService.findByMemberIdAndCancelledTrue(memberId);
 		} catch (ResourceNotFoundException e) {
-			throw new ResourceNotFoundException("Appointment Id not found", appointmentId);
+			throw new ResourceNotFoundException("Member Id not found", memberId);
 		}
-
-		return ResponseEntity.ok(appointment);
+		log.info("getAppointments ended{}", memberId);
+		return appointment;
 	}
 
 	@RequestMapping(value = "/schedule", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)

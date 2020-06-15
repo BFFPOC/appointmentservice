@@ -52,9 +52,8 @@ public class BffServiceImpl implements BffService{
 	}
 
 	@Override
-	public List<Appointment> findByFacilityIdAndMemberId(int faciltityId, int memberId) {
-		//appointmentRepository.findByFacilityIdAndMemberId(faciltityId, memberId)
-		return appointmentRepository.findByFacilityIdAndMemberId(faciltityId, memberId);
+	public List<Appointment> findByMemberIdAndCancelledTrue(int memberId) {
+		return appointmentRepository.findByMemberIdAndCancelledFalse(memberId);
 	}
 
 	@Override

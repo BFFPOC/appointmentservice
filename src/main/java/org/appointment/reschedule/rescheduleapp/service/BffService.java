@@ -16,7 +16,8 @@ public interface BffService {
 	
 	Facility findByFacilityId(int facilityId);
 	
-	List<Appointment> findByFacilityIdAndMemberId(int faciltityId,int memberId);
+	List<Appointment> findByMemberIdAndCancelledTrue(int memberId);
+	
 	public List<String> findAppointmentSlot();
 	
 }
