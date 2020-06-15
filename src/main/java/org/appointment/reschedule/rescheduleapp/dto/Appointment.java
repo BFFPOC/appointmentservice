@@ -51,8 +51,10 @@ public class Appointment {
 	@Type(type = "numeric_boolean")
 	private boolean cancelled;
 	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "appointment")
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private Member member;
 	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "appointment")
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private Facility facility;
 
 	@JsonInclude(JsonInclude.Include.NON_NULL)
