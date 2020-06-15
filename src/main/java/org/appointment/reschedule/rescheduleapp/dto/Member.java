@@ -2,19 +2,19 @@ package org.appointment.reschedule.rescheduleapp.dto;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "MEMBER" )
+@Table(name = "MEMBER")
 public class Member {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "MEM_ID")
-	private int id;
+	private int memberId;
 	@Column(name = "MEM_NAME")
 	private String memName;
 	@Column(name = "MEM_ADDRESS")
@@ -24,16 +24,36 @@ public class Member {
 	@Column(name = "TOKEN")
 	private String token;
 
+	@OneToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "MEM_ID", nullable = false)
+	private Appointment appointment;
+
+	public int getMemberId() {
+		return memberId;
+	}
+
+	public void setMemberId(int memberId) {
+		this.memberId = memberId;
+	}
+
+	public Appointment getAppointment() {
+		return appointment;
+	}
+
+	public void setAppointment(Appointment appointment) {
+		this.appointment = appointment;
+	}
+
 	public Member() {
 
 	}
 
 	public int getId() {
-		return id;
+		return memberId;
 	}
 
 	public void setId(int id) {
-		this.id = id;
+		this.memberId = id;
 	}
 
 	public String getMemName() {

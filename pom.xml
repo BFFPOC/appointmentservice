@@ -64,7 +64,7 @@
         <version>1.9.1</version>  
         <configuration> 
           <schemaVersion>V2</schemaVersion>  
-          <resourceGroup>appointmentserviceapp-1591774967422-rg</resourceGroup>  
+          <resourceGroup>appointmentserviceapp-1591774967423-rg</resourceGroup>  
           <appName>appointmentserviceapp-1591774967422</appName>  
           <pricingTier>P1v2</pricingTier>  
           <region>westeurope</region>  
