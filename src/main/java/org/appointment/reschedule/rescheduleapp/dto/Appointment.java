@@ -1,13 +1,10 @@
 package org.appointment.reschedule.rescheduleapp.dto;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -29,33 +26,22 @@ public class Appointment {
 	private String appointmentSlot;
 	@Column(name = "MEMBER_ID")
 	private int memberId;
-	public Member getMember() {
-		return member;
-	}
-
-	public void setMember(Member member) {
-		this.member = member;
-	}
-
-	public Facility getFacility() {
-		return facility;
-	}
-
-	public void setFacility(Facility facility) {
-		this.facility = facility;
-	}
 
 	@Column(name = "FACILITY_ID")
 	private int facilityId;
 	@Column(name = "CANCELLED")
 	@Type(type = "numeric_boolean")
 	private boolean cancelled;
-	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "appointment")
+
+	/*@ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.MERGE)
+	@JoinColumn(name = "MEMBER_ID", insertable = false, updatable = false)
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private Member member;
-	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "appointment")
+
+	@ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.MERGE)
+	@JoinColumn(name = "FACILITY_ID", insertable = false, updatable = false)
 	@JsonInclude(JsonInclude.Include.NON_NULL)
-	private Facility facility;
+	private Facility facility;*/
 
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	@Transient

@@ -58,8 +58,12 @@ public class BffServiceImpl implements BffService{
 
 	@Override
 	public List<String> findAppointmentSlot() {
-		// TODO Auto-generated method stub
 		return appointmentRepository.findAppointmentSlot();
+	}
+
+	@Override
+	public List<Appointment> findByMemberIdAndFacilityId(int memberId, int facilityId) {
+		return appointmentRepository.findByMemberIdAndFacilityId(memberId, facilityId);
 	}
 
 }

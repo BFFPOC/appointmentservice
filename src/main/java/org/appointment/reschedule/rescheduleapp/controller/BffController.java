@@ -5,6 +5,7 @@ import java.util.List;
 import org.appointment.reschedule.rescheduleapp.dto.Appointment;
 import org.appointment.reschedule.rescheduleapp.dto.Member;
 import org.appointment.reschedule.rescheduleapp.exception.ResourceNotFoundException;
+import org.appointment.reschedule.rescheduleapp.repository.AppointmentRepository;
 import org.appointment.reschedule.rescheduleapp.service.BffService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +26,9 @@ public class BffController {
 
 	@Autowired
 	BffService bffService;
+
+	@Autowired
+	AppointmentRepository appointmentRepository;
 
 	@RequestMapping(value = "/reschedule", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.PUT)
 	public Appointment updateAppointmentSlot(@RequestBody Appointment reqPayLoad,
@@ -51,7 +55,7 @@ public class BffController {
 		// Update the timeslot for appointment.
 		bffService.save(appt);
 		return appt;
-		
+
 	}
 
 	@RequestMapping(value = "/getAppointments/{id}", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
@@ -60,7 +64,7 @@ public class BffController {
 		List<Appointment> appointment = null;
 		try {
 			appointment = bffService.findByMemberIdAndCancelledTrue(memberId);
-			if(appointment==null || appointment.isEmpty()) {
+			if (appointment == null || appointment.isEmpty()) {
 				log.info("getAppointments list size", appointment.size());
 				throw new ResourceNotFoundException("Appointments are not available for the given member Id", memberId);
 			}
@@ -75,12 +79,13 @@ public class BffController {
 	public Appointment scheduleApp(@RequestBody Appointment reqPayLoad) {
 		List<String> findAppointmentSlot = bffService.findAppointmentSlot();
 		for (String slot : findAppointmentSlot) {
-			if(slot.equals(reqPayLoad.getAppointmentSlot())){
-				throw new ResourceNotFoundException(" Appointment slot is not available or same", reqPayLoad.getMemberId());				
-			}			
-			
-		} 
-		
+			if (slot.equals(reqPayLoad.getAppointmentSlot())) {
+				throw new ResourceNotFoundException(" Appointment slot is not available or same",
+						reqPayLoad.getMemberId());
+			}
+
+		}
+
 		// Verify Member Id and Facility Id from the request
 		Member members = null;
 		if (reqPayLoad.getMemberId() != 0) {
@@ -89,21 +94,35 @@ public class BffController {
 		if (reqPayLoad.getFacilityId() != 0) {
 			bffService.findByFacilityId(reqPayLoad.getFacilityId());
 		}
-		
+
 		if (!members.getToken().equals(reqPayLoad.getToken())) {
 			throw new ResourceNotFoundException("token is not valid", members.getId());
 		}
-		Appointment app = new Appointment();
-		app.setFacilityId(reqPayLoad.getFacilityId());
-		app.setMemberId(reqPayLoad.getMemberId());
-		app.setAppointmentSlot(reqPayLoad.getAppointmentSlot());
-		try {
-			bffService.save(app);
-		} catch (DuplicateKeyException DuplicateKeyException) {
-			throw new ResourceNotFoundException("DuplicateKey Found in Appointment", app.getId());
+
+		List<Appointment> findByMemberIdAndFacilityId = bffService.findByMemberIdAndFacilityId(reqPayLoad.getMemberId(),
+				reqPayLoad.getFacilityId());
+
+		Appointment save = null;
+		if (findByMemberIdAndFacilityId.size() == 0) {
+			Appointment app = new Appointment();
+			app.setFacilityId(reqPayLoad.getFacilityId());
+			app.setMemberId(reqPayLoad.getMemberId());
+			app.setAppointmentSlot(reqPayLoad.getAppointmentSlot());
+			try {
+				save = bffService.save(app);
+			} catch (DuplicateKeyException DuplicateKeyException) {
+				throw new ResourceNotFoundException("DuplicateKey Found in Appointment", app.getId());
+			}
+
+		} else {
+			for (Appointment appointment : findByMemberIdAndFacilityId) {
+				appointment.setAppointmentSlot(reqPayLoad.getAppointmentSlot());
+				save = bffService.save(appointment);
+
+			}
 		}
 
-		return bffService.findById(app.getId());
+		return bffService.findById(save.getId());
 	}
 
 	@RequestMapping(value = "/cancel", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.PUT)
