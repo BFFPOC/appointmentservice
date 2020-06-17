@@ -51,10 +51,6 @@ public class BffServiceImpl implements BffService{
 		return facilitiesRepository.findById(facilityId).orElseThrow(() -> new ResourceNotFoundException("Facility Id not Found",facilityId));
 	}
 
-	@Override
-	public List<Appointment> findByMemberIdAndCancelledTrue(int memberId) {
-		return appointmentRepository.findByMemberIdAndCancelledFalse(memberId);
-	}
 
 	@Override
 	public List<String> findAppointmentSlot() {
@@ -66,4 +62,10 @@ public class BffServiceImpl implements BffService{
 		return appointmentRepository.findByMemberIdAndFacilityId(memberId, facilityId);
 	}
 
+	@Override
+	public List<Appointment> findByMemberId(int memberId) {
+		return appointmentRepository.findByMemberId(memberId);
+	}
+
+	
 }

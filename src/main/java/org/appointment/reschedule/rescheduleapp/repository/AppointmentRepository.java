@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface AppointmentRepository extends CrudRepository<Appointment, Integer> {
 
-	List<Appointment> findByMemberIdAndCancelledFalse(int memberId);
+	List<Appointment> findByMemberId(int memberId);
 
 	public static final String FIND_SLOTS = "SELECT APPT_SLOT FROM APPOINTMENT";
 

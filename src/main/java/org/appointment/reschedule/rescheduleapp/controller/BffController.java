@@ -63,7 +63,7 @@ public class BffController {
 		log.info("getAppointments started{}", memberId);
 		List<Appointment> appointment = null;
 		try {
-			appointment = bffService.findByMemberIdAndCancelledTrue(memberId);
+			appointment = bffService.findByMemberId(memberId);
 			if (appointment == null || appointment.isEmpty()) {
 				log.info("getAppointments list size", appointment.size());
 				throw new ResourceNotFoundException("Appointments are not available for the given member Id", memberId);
@@ -76,7 +76,7 @@ public class BffController {
 	}
 
 	@RequestMapping(value = "/schedule", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
-	public Appointment scheduleApp(@RequestBody Appointment reqPayLoad) {
+	public Appointment scheduleApp(@RequestBody Appointment reqPayLoad,@RequestHeader("X-correlationid") String correaltionId) {
 		List<String> findAppointmentSlot = bffService.findAppointmentSlot();
 		for (String slot : findAppointmentSlot) {
 			if (slot.equals(reqPayLoad.getAppointmentSlot())) {
@@ -102,14 +102,15 @@ public class BffController {
 		List<Appointment> findByMemberIdAndFacilityId = bffService.findByMemberIdAndFacilityId(reqPayLoad.getMemberId(),
 				reqPayLoad.getFacilityId());
 
-		Appointment save = null;
+		Appointment appointmentData = null;
 		if (findByMemberIdAndFacilityId.size() == 0) {
 			Appointment app = new Appointment();
 			app.setFacilityId(reqPayLoad.getFacilityId());
 			app.setMemberId(reqPayLoad.getMemberId());
 			app.setAppointmentSlot(reqPayLoad.getAppointmentSlot());
+			app.setCorrealtionId(correaltionId);
 			try {
-				save = bffService.save(app);
+				appointmentData = bffService.save(app);
 			} catch (DuplicateKeyException DuplicateKeyException) {
 				throw new ResourceNotFoundException("DuplicateKey Found in Appointment", app.getId());
 			}
@@ -117,12 +118,13 @@ public class BffController {
 		} else {
 			for (Appointment appointment : findByMemberIdAndFacilityId) {
 				appointment.setAppointmentSlot(reqPayLoad.getAppointmentSlot());
-				save = bffService.save(appointment);
+				appointment.setCorrealtionId(correaltionId);
+				appointmentData = bffService.save(appointment);
 
 			}
 		}
 
-		return bffService.findById(save.getId());
+		return bffService.findById(appointmentData.getId());
 	}
 
 	@RequestMapping(value = "/cancel", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.PUT)
