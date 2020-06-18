@@ -2,6 +2,7 @@ package org.appointment.reschedule.rescheduleapp.controller;
 
 import java.util.List;
 
+import org.apache.commons.codec.binary.Base64;
 import org.appointment.reschedule.rescheduleapp.dto.Appointment;
 import org.appointment.reschedule.rescheduleapp.dto.Member;
 import org.appointment.reschedule.rescheduleapp.exception.ResourceNotFoundException;
@@ -40,7 +41,7 @@ public class BffController {
 			// Validate token of the request
 			Member members = bffService.findByMemId(appt.getMemberId());
 
-			if (members.getToken().equals(reqPayLoad.getToken())) {
+			if (members.getToken().equals(validateToken(reqPayLoad.getToken()))) {
 				if (appt.isCancelled()) {
 					throw new ResourceNotFoundException("Appointment is already cancelled", reqPayLoad.getMemberId());
 				}
@@ -95,7 +96,7 @@ public class BffController {
 			bffService.findByFacilityId(reqPayLoad.getFacilityId());
 		}
 
-		if (!members.getToken().equals(reqPayLoad.getToken())) {
+		if (!members.getToken().equals(validateToken(reqPayLoad.getToken()))) {
 			throw new ResourceNotFoundException("token is not valid", members.getId());
 		}
 
@@ -135,7 +136,7 @@ public class BffController {
 		if (appt != null) {
 			// Validate token of the request
 			Member members = bffService.findByMemId(reqPayLoad.getMemberId());
-			if (members.getToken().equals(reqPayLoad.getToken())) {
+			if (members.getToken().equals(validateToken(reqPayLoad.getToken()))) {
 				if (!appt.isCancelled()) {
 					appt.setCancelled(true);
 				} else {
@@ -151,5 +152,28 @@ public class BffController {
 		bffService.save(appt);
 		return appt;
 	}
+
+	public String validateToken(String token) {
+		log.info("input token{}::",token);
+		String[] split_string = token.split("\\.");
+		String base64EncodedHeader = split_string[0];
+		String base64EncodedBody = split_string[1];
+		String base64EncodedSignature = split_string[2];
+		System.out.println("~~~~~~~~~ JWT Header ~~~~~~~");
+		Base64 base64Url = new Base64(true);
+		String header = new String(base64Url.decode(base64EncodedHeader));
+		System.out.println("JWT Header : " + header);
+		System.out.println("~~~~~~~~~ JWT Body ~~~~~~~");
+		String body = new String(base64Url.decode(base64EncodedBody));
+		System.out.println("JWT Body : " + body);
+		String[] jsonString = body.split(",");
+		log.info("input valid token after decoding:::{} ", jsonString[0].split(":")[1].replaceAll("^\"|\"$", ""));
+
+		return jsonString[0].split(":")[1].replaceAll("^\"|\"$", "");
+
+	}
+	
+	
+	
 
 }
