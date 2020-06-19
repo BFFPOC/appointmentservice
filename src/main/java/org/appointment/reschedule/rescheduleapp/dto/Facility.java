@@ -1,13 +1,8 @@
 package org.appointment.reschedule.rescheduleapp.dto;
 
-import java.util.Set;
-
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -24,8 +19,7 @@ public class Facility {
 	@Column(name = "FAC_CITY")
 	private String facCity;
 
-	//@OneToMany(mappedBy = "facility", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	//private Set<Appointment> appointments;
+	
 
 	public Facility() {
 
@@ -63,12 +57,5 @@ public class Facility {
 		this.facCity = facCity;
 	}
 
-	/*public Set<Appointment> getAppointments() {
-		return appointments;
-	}
-
-	public void setAppointments(Set<Appointment> appointments) {
-		this.appointments = appointments;
-	}
-*/
+	
 }

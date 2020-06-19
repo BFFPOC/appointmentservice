@@ -77,7 +77,8 @@ public class BffController {
 	}
 
 	@RequestMapping(value = "/schedule", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
-	public Appointment scheduleApp(@RequestBody Appointment reqPayLoad,@RequestHeader("X-correlationid") String correaltionId) {
+	public Appointment scheduleApp(@RequestBody Appointment reqPayLoad,
+			@RequestHeader("X-correlationid") String correaltionId) {
 		List<String> findAppointmentSlot = bffService.findAppointmentSlot();
 		for (String slot : findAppointmentSlot) {
 			if (slot.equals(reqPayLoad.getAppointmentSlot())) {
@@ -118,9 +119,25 @@ public class BffController {
 
 		} else {
 			for (Appointment appointment : findByMemberIdAndFacilityId) {
-				appointment.setAppointmentSlot(reqPayLoad.getAppointmentSlot());
-				appointment.setCorrealtionId(correaltionId);
-				appointmentData = bffService.save(appointment);
+				if (appointment.getFacilityId() == reqPayLoad.getFacilityId()
+						&& appointment.getMemberId() == reqPayLoad.getMemberId() && !appointment.isCancelled()) {
+					appointment.setAppointmentSlot(reqPayLoad.getAppointmentSlot());
+					appointment.setCorrealtionId(correaltionId);
+					appointmentData = bffService.save(appointment);
+				} else if (appointment.getFacilityId() == reqPayLoad.getFacilityId()
+						&& appointment.getMemberId() == reqPayLoad.getMemberId() && appointment.isCancelled()) {
+					Appointment app = new Appointment();
+					app.setFacilityId(reqPayLoad.getFacilityId());
+					app.setMemberId(reqPayLoad.getMemberId());
+					app.setAppointmentSlot(reqPayLoad.getAppointmentSlot());
+					app.setCorrealtionId(correaltionId);
+					try {
+						appointmentData = bffService.save(app);
+					} catch (DuplicateKeyException DuplicateKeyException) {
+						throw new ResourceNotFoundException("DuplicateKey Found in Appointment", app.getId());
+					}
+
+				}
 
 			}
 		}
@@ -156,19 +173,11 @@ public class BffController {
 	public String validateToken(String token) {
 		log.info("input token{}::",token);
 		String[] split_string = token.split("\\.");
-		String base64EncodedHeader = split_string[0];
 		String base64EncodedBody = split_string[1];
-		String base64EncodedSignature = split_string[2];
-		System.out.println("~~~~~~~~~ JWT Header ~~~~~~~");
 		Base64 base64Url = new Base64(true);
-		String header = new String(base64Url.decode(base64EncodedHeader));
-		System.out.println("JWT Header : " + header);
-		System.out.println("~~~~~~~~~ JWT Body ~~~~~~~");
 		String body = new String(base64Url.decode(base64EncodedBody));
-		System.out.println("JWT Body : " + body);
 		String[] jsonString = body.split(",");
 		log.info("input valid token after decoding:::{} ", jsonString[0].split(":")[1].replaceAll("^\"|\"$", ""));
-
 		return jsonString[0].split(":")[1].replaceAll("^\"|\"$", "");
 
 	}
