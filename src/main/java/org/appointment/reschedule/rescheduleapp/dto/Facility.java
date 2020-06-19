@@ -1,18 +1,20 @@
 package org.appointment.reschedule.rescheduleapp.dto;
 
+import java.util.Set;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "FACILITY" )
+@Table(name = "FACILITY")
 public class Facility {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "FAC_ID")
 	private int id;
 	@Column(name = "FAC_NAME")
@@ -21,7 +23,9 @@ public class Facility {
 	private String facAddr;
 	@Column(name = "FAC_CITY")
 	private String facCity;
-	private String token;
+
+	//@OneToMany(mappedBy = "facility", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	//private Set<Appointment> appointments;
 
 	public Facility() {
 
@@ -59,12 +63,12 @@ public class Facility {
 		this.facCity = facCity;
 	}
 
-	public String getToken() {
-		return token;
+	/*public Set<Appointment> getAppointments() {
+		return appointments;
 	}
 
-	public void setToken(String token) {
-		this.token = token;
+	public void setAppointments(Set<Appointment> appointments) {
+		this.appointments = appointments;
 	}
-
+*/
 }

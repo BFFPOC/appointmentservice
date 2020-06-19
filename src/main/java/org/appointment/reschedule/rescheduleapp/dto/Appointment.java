@@ -5,8 +5,11 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.hibernate.annotations.Type;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -15,20 +18,35 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 public class Appointment {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequence-generator")
+	@SequenceGenerator(name = "sequence-generator", sequenceName = "appt_sequence")
 	@Column(name = "APPT_ID")
-	private Integer id;
+	private int id;
 	@Column(name = "APPT_SLOT")
 	private String appointmentSlot;
 	@Column(name = "MEMBER_ID")
 	private int memberId;
+
 	@Column(name = "FACILITY_ID")
 	private int facilityId;
+	@Column(name = "CANCELLED")
+	@Type(type = "numeric_boolean")
+	private boolean cancelled;
+
+	/*@ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.MERGE)
+	@JoinColumn(name = "MEMBER_ID", insertable = false, updatable = false)
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	private Member member;
+
+	@ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.MERGE)
+	@JoinColumn(name = "FACILITY_ID", insertable = false, updatable = false)
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	private Facility facility;*/
 
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	@Transient
 	private String token;
-	
+
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	@Transient
 	private String correaltionId;
@@ -36,11 +54,11 @@ public class Appointment {
 	public Appointment() {
 	}
 
-	public Integer getId() {
+	public int getId() {
 		return id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 
@@ -68,6 +86,14 @@ public class Appointment {
 		this.facilityId = facilityId;
 	}
 
+	public boolean isCancelled() {
+		return cancelled;
+	}
+
+	public void setCancelled(boolean cancelled) {
+		this.cancelled = cancelled;
+	}
+
 	public String getToken() {
 		return token;
 	}
@@ -76,7 +102,6 @@ public class Appointment {
 		this.token = token;
 	}
 
-	
 	public String getCorrealtionId() {
 		return correaltionId;
 	}
@@ -87,7 +112,7 @@ public class Appointment {
 
 	@Override
 	public String toString() {
-		return "Appintment{" + ", memberid='" + memberId + '\'' + ", appintmentslot=" + appointmentSlot + '}';
+		return "Appointment{" + ", memberid='" + memberId + '\'' + ", appintmentslot=" + appointmentSlot + '}';
 	}
 
 }
