@@ -33,15 +33,6 @@ public class Appointment {
 	@Type(type = "numeric_boolean")
 	private boolean cancelled;
 
-	/*@ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.MERGE)
-	@JoinColumn(name = "MEMBER_ID", insertable = false, updatable = false)
-	@JsonInclude(JsonInclude.Include.NON_NULL)
-	private Member member;
-
-	@ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.MERGE)
-	@JoinColumn(name = "FACILITY_ID", insertable = false, updatable = false)
-	@JsonInclude(JsonInclude.Include.NON_NULL)
-	private Facility facility;*/
 
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	@Transient

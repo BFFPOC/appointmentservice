@@ -1,9 +1,11 @@
 package org.appointment.reschedule.rescheduleapp.controller;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.codec.binary.Base64;
 import org.appointment.reschedule.rescheduleapp.dto.Appointment;
+import org.appointment.reschedule.rescheduleapp.dto.JwtToken;
 import org.appointment.reschedule.rescheduleapp.dto.Member;
 import org.appointment.reschedule.rescheduleapp.exception.ResourceNotFoundException;
 import org.appointment.reschedule.rescheduleapp.repository.AppointmentRepository;
@@ -19,6 +21,9 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestController
 public class BffController {
@@ -77,7 +82,8 @@ public class BffController {
 	}
 
 	@RequestMapping(value = "/schedule", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
-	public Appointment scheduleApp(@RequestBody Appointment reqPayLoad,@RequestHeader("X-correlationid") String correaltionId) {
+	public Appointment scheduleApp(@RequestBody Appointment reqPayLoad,
+			@RequestHeader("X-correlationid") String correaltionId) {
 		List<String> findAppointmentSlot = bffService.findAppointmentSlot();
 		for (String slot : findAppointmentSlot) {
 			if (slot.equals(reqPayLoad.getAppointmentSlot())) {
@@ -118,9 +124,25 @@ public class BffController {
 
 		} else {
 			for (Appointment appointment : findByMemberIdAndFacilityId) {
-				appointment.setAppointmentSlot(reqPayLoad.getAppointmentSlot());
-				appointment.setCorrealtionId(correaltionId);
-				appointmentData = bffService.save(appointment);
+				if (appointment.getFacilityId() == reqPayLoad.getFacilityId()
+						&& appointment.getMemberId() == reqPayLoad.getMemberId() && !appointment.isCancelled()) {
+					appointment.setAppointmentSlot(reqPayLoad.getAppointmentSlot());
+					appointment.setCorrealtionId(correaltionId);
+					appointmentData = bffService.save(appointment);
+				} else if (appointment.getFacilityId() == reqPayLoad.getFacilityId()
+						&& appointment.getMemberId() == reqPayLoad.getMemberId() && appointment.isCancelled()) {
+					Appointment app = new Appointment();
+					app.setFacilityId(reqPayLoad.getFacilityId());
+					app.setMemberId(reqPayLoad.getMemberId());
+					app.setAppointmentSlot(reqPayLoad.getAppointmentSlot());
+					app.setCorrealtionId(correaltionId);
+					try {
+						appointmentData = bffService.save(app);
+					} catch (DuplicateKeyException DuplicateKeyException) {
+						throw new ResourceNotFoundException("DuplicateKey Found in Appointment", app.getId());
+					}
+
+				}
 
 			}
 		}
@@ -154,26 +176,26 @@ public class BffController {
 	}
 
 	public String validateToken(String token) {
-		log.info("input token{}::",token);
+		log.info("input token{}::", token);
 		String[] split_string = token.split("\\.");
 		String base64EncodedHeader = split_string[0];
 		String base64EncodedBody = split_string[1];
-		String base64EncodedSignature = split_string[2];
-		System.out.println("~~~~~~~~~ JWT Header ~~~~~~~");
+		log.info("~~~~~~~~~ JWT Header ~~~~~~~");
 		Base64 base64Url = new Base64(true);
 		String header = new String(base64Url.decode(base64EncodedHeader));
-		System.out.println("JWT Header : " + header);
-		System.out.println("~~~~~~~~~ JWT Body ~~~~~~~");
+		log.info("JWT Header : " + header);
+		log.info("~~~~~~~~~ JWT Body ~~~~~~~");
 		String body = new String(base64Url.decode(base64EncodedBody));
-		System.out.println("JWT Body : " + body);
-		String[] jsonString = body.split(",");
-		log.info("input valid token after decoding:::{} ", jsonString[0].split(":")[1].replaceAll("^\"|\"$", ""));
-
-		return jsonString[0].split(":")[1].replaceAll("^\"|\"$", "");
-
+		log.info("JWT Body {}: ", body);
+		ObjectMapper mapper = new ObjectMapper();
+		JwtToken readValue = null;
+		try {
+			readValue = mapper.readValue(body, JwtToken.class);
+		} catch (JsonProcessingException e) {
+			log.error("json mapping  exception:{}", e.getMessage());
+		}
+		log.info(" valid token after decoding:::{} ", readValue.getToken());
+		return readValue.getToken();
 	}
-	
-	
-	
 
 }

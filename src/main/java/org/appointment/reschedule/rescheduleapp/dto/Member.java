@@ -21,9 +21,6 @@ public class Member {
 	@Column(name = "TOKEN")
 	private String token;
 
-	/*@OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	private Set<Appointment> appointments;
-*/
 
 	public Member() {
 
