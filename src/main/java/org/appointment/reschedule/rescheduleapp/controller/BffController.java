@@ -1,6 +1,5 @@
 package org.appointment.reschedule.rescheduleapp.controller;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.codec.binary.Base64;
@@ -77,6 +76,7 @@ public class BffController {
 		} catch (ResourceNotFoundException e) {
 			throw new ResourceNotFoundException("Member Id not found", memberId);
 		}
+
 		log.info("getAppointments ended{}", memberId);
 		return appointment;
 	}
@@ -90,7 +90,6 @@ public class BffController {
 				throw new ResourceNotFoundException(" Appointment slot is not available or same",
 						reqPayLoad.getMemberId());
 			}
-
 		}
 
 		// Verify Member Id and Facility Id from the request
@@ -141,12 +140,9 @@ public class BffController {
 					} catch (DuplicateKeyException DuplicateKeyException) {
 						throw new ResourceNotFoundException("DuplicateKey Found in Appointment", app.getId());
 					}
-
 				}
-
 			}
 		}
-
 		return bffService.findById(appointmentData.getId());
 	}
 
